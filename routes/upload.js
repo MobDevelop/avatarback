@@ -1,8 +1,9 @@
 const AWS = require("aws-sdk");
 const bluebird = require("bluebird");
-
-const AWS_ACCESS_KEY_ID = "AKIAXZCXEOE56RVNISZL";
-const AWS_SECRET_ACCESS_KEY = "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";
+const dotenv = require("dotenv");
+dotenv.config();
+const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
+const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
 const S3_BUCKET = "avatar3d/";
 
 // configure the keys for accessing AWS

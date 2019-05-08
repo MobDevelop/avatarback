@@ -4,7 +4,8 @@ const path = require("path");
 var router = express.Router();
 var mime = require("mime-types");
 const uploadFile = require("./upload.js");
-
+const fileType = require("file-type");
+const multiparty = require("multiparty");
 /* GET home page. */
 router.get("/", function(req, res, next) {
   const query = "select * from users";
@@ -26,18 +27,37 @@ router.get("/downPly", function(req, res, next) {
   ]);
   pythonProcess.stdout.on("data", async data => {
     try {
-      const filePath = path.join(
+      let filePath = path.join(
         __dirname,
         "../" + data.toString() + "/model.ply"
       );
-      console.log(filePath);
-      const buffer = fs.readFileSync(filePath);
-      console.log(mime.lookup(filePath));
-      const returnedData = await uploadFile("ply", buffer, data, {
+      console.log("start uploading");
+      let buffer = fs.readFileSync(filePath);
+      let returnedData = await uploadFile("plyPath", buffer, data, {
         ext: "ply",
         mime: "ply"
       });
-      console.log(returnedData);
+      console.log("ply file uploaded");
+      filePath = path.join(__dirname, "../" + data.toString() + "/model.jpg");
+      buffer = fs.readFileSync(filePath);
+      returnedData = await uploadFile("plyPath", buffer, data, {
+        ext: "jpg",
+        mime: "image/jpeg"
+      });
+      console.log("jpg file uploaded");
+      const query =
+        "update users set plyPath = '" +
+        returnedData.Location.split(".jpg")[0] +
+        "' where username = '" +
+        req.query.username +
+        "'";
+      db.query(query, (err, result) => {
+        if (err) {
+          console.log("Error occured while running the query");
+        }
+        console.log(result);
+      });
+      console.log("db updated");
       return res.status(200).send(returnedData);
     } catch (e) {
       console.log(e);
@@ -112,6 +132,50 @@ router.post("/login", function(req, res, next) {
       return res.status(200).send(data);
     }
   });
+});
+
+router.post("/uploadImage", function(req, res, next) {
+  const form = new multiparty.Form();
+  form.parse(req, async (error, fields, files) => {
+    if (error) throw new Error(error);
+    try {
+      const path = files.file[0].path;
+      const buffer = fs.readFileSync(path);
+      const type = fileType(buffer);
+      const data = await uploadFile("images", buffer, fields.user[0], type);
+      const query =
+        "update users set originalImagePath = '" +
+        data.Location +
+        "' where username = '" +
+        fields.user[0] +
+        "'";
+      db.query(query, (err, result) => {
+        if (err) {
+          console.log("Error occured while running the query");
+        }
+        console.log(result);
+      });
+      return res.status(200).send(data);
+    } catch (error) {
+      return res.status(400).send(error);
+    }
+  });
+});
+
+router.get("/getAllUsers", function(req, res, next) {
+  const query = "select *from users where role = 0";
+  try {
+    db.query(query, (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      console.log(result);
+      return res.status(200).send(result);
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send(error);
+  }
 });
 
 module.exports = router;
