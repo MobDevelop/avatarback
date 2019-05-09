@@ -14,8 +14,8 @@ from time import gmtime, strftime
 
 AUTH_FORM = {
     'grant_type': 'client_credentials',
-    'client_id': '70i2YU2c08VZzahcbHiQvtcSnmsmCKgb3JuqKIYf',
-    'client_secret': 'tGebOcG5uhocv6BzupSJZRqIgQfmpPN9NsTPtwWZXTVSdXWxN8XfDCzSST45kgeFLQgpgCqcI20475Ls28CVBGIGjTdEiGFBoT9f1QQP4qDnrrgFVTRX5ZspIRtgmhut',
+    'client_id': '9SIJKHfXSI3PPO1TFFKQvYoNgDDDfenFeqXk25H4',
+    'client_secret': 'GBHiwUXcZ2aQOzx4Ip7Cgfx9reJqbGIlkVEl5zmIOdvaoqf9NqVwlEvsWXcMRL8dumoIvI3BYfUsTiR8cYrb1UVj5Q01oVCatco5kP2QuOX4yGmb179sDRg4hVXJyRdI',
 }
 
 
